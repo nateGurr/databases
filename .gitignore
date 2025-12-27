@@ -1,0 +1,37 @@
+# Node dependencies (match in any directory)
+**/node_modules/
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/*.log
+**/logs/
+
+# Environment variables
+**/.env
+**/.env.*.local
+
+# Build output
+**/dist/
+**/build/
+**/out/
+**/.next/
+**/.nuxt/
+**/.cache/
+**/.vite/
+**/.parcel-cache/
+**/coverage/
+**/.nyc_output/
+
+# Misc
+**/.pnp*
+**/*.tgz
+**/.yarn-integrity
+
+# IDEs / OS
+**/.DS_Store
+**/Thumbs.db
+**/.vscode/
+**/.idea/
