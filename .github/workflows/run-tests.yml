@@ -3,14 +3,13 @@ name: Run Assignment Tests
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
     strategy:
+      fail-fast: false
       matrix:
         assignment: ['01', '02', '03', '04', '05', '06', '07']
     
