@@ -74,6 +74,9 @@ You may also use Docker as your Node.js environment if you prefer not to install
     - `docker-compose.yml`: Docker Compose file to set up the required environment;
     - Other files and folders as needed for the assignment, refer to the `README.md` in each assignment folder for details.
 - `.github/workflows/`: Contains GitHub Actions workflows for automated testing of assignments. **Do not modify these files**.
+- `.gitignore`: Specifies files and folders to be ignored by Git. You may modify this file if needed.
+- `scripts/`: Contains helper scripts for running tests and other tasks. Do not modify these files.
+- `reports/`: Will contain any generated files or outputs from assignments. Do not modify these files.
 
 ## Testing Assignments
 

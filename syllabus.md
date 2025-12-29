@@ -414,3 +414,5 @@ No classes or assignments.
 | Coding Assignments         | 25%    |
 | Midterm Exam               | 20%    |
 | Final Project              | 25%    |
+
+**Late Policy**: 1% deduction per day late on any submission. Maximum 25% deduction. No submissions accepted after 7 days late.

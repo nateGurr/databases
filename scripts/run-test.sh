@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# this script only runs on unix-like systems
+
 # fail on any error
 set -e
 
@@ -17,4 +19,4 @@ fi
 cd "$SCRIPT_DIR/$ASSIGNMENT_FOLDER"
 
 # run the assignment script
-./test-assignment.sh
+./test.sh

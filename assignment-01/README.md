@@ -29,6 +29,7 @@ npm -v
     - On Jetbrains IDEs, you can open the terminal via `View` > `Tool Windows` > `Terminal`.
 6. On the terminal, write `cd assignment-01` then enter;
 7. Run `docker-compose up -d postgres adminer` to start a PostgreSQL database and Adminer web interface;
+   1. (Optional) Play with the options in the `docker-compose.yaml` file to understand how it works. Start other services if you want to explore more.
 8. Open your web browser and navigate to `http://localhost:8080` to access Adminer;
 9. In Adminer, use the following credentials to log in to the PostgreSQL
     - System: PostgreSQL
@@ -39,10 +40,10 @@ npm -v
 10. Once logged in, you should see the PostgreSQL database interface. You can now interact with the database using SQL queries which you will learn more about in the upcoming assignments.
 11. click on the `SQL command`, then Execute the following query to verify the connection `SELECT version();`
 12. Take a screenshot of the Adminer interface showing the successful connection to the PostgreSQL database. Save this screenshot as `adminer_connection.png` in this `assignment-01` folder. The filename should be exactly it.
-    - On Windows, you can use the `Snipping Tool` or `Snip & Sketch` to take screenshots.
-    - On MacOS, you can use `Shift + Command + 5` to capture a selected portion of the screen.
-    - On Linux, you can use `gnome-screenshot` or `Shutter` to take screenshots.
-13. Commit and push your changes to your forked repository on GitHub.
+    - On Windows, you can use the `Snipping Tool` or `Snip & Sketch` to take screenshots, then save it as `adminer_connection.png` in this folder.
+    - On MacOS, you can use `Shift + Command + 5` to capture a selected portion of the screen, the files will be saved to your desktop by default, rename it to `adminer_connection.png` and move it to this folder.
+    - On Linux, you can use `gnome-screenshot` or `Shutter` to take screenshots. (you use linux, you probably know how to take screenshots already 😀).
+13. Add, Commit and push your changes to your forked repository on GitHub.
 14. Remember to stop the Docker containers when you are done by running `docker-compose stop` in the terminal. (docker-compose down` will also remove any data stored in the database).
 
 ## DataGrip (Optional)
