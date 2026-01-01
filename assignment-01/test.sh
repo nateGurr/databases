@@ -8,5 +8,8 @@ set -e
 # get the dir name of the script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# copy the file adminer_connection.png to the ../artifacts/01/ folder
-cp "$SCRIPT_DIR/../assignment-01/adminer_connection.png" "$SCRIPT_DIR/../reports/01/"
+# verify if the file adminer_connection.png is there
+if [ ! -f "$SCRIPT_DIR/adminer_connection.png" ]; then
+  echo "adminer_connection.png not found!"
+  exit 1
+fi
