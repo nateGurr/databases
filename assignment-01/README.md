@@ -79,6 +79,16 @@ npm -v
 4. Select the option `Read and write permissions`;
 5. Click on the `Save` button to apply the changes.
 
+## Screenshots (10 points)
+
+1. Your private repository's main page showing the repository name and that it is private. Name it `repo_name.png`.
+2. The "Actions" tab of your private repository showing that GitHub Actions is enabled and at least the first one is passing. Name it `actions_enabled.png`.
+3. The "Collaborators" settings page showing that your instructor has been added as a collaborator. Name it `collaborators.png`.
+4. Your IDE showing you have disabled AI code completion features (if applicable). Name it `ai_disabled.png`.
+5. The screenshot `adminer_connection.png` showing the successful connection to PostgreSQL via Adminer.
+
+All screenshots should be placed in this very own `assignment-01` directory. At the same level as this README.md file.
+
 ## Deliverables
 
 On canvas submit the following:
