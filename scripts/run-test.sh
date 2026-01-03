@@ -16,7 +16,7 @@ if [ -z "$ASSIGNMENT_FOLDER" ]; then
 fi
 
 # navigate to the assignment folder
-cd "$SCRIPT_DIR/$ASSIGNMENT_FOLDER"
+cd "$SCRIPT_DIR/../$ASSIGNMENT_FOLDER"
 
 # run the assignment script
 ./test.sh
