@@ -105,23 +105,96 @@ On JetBrains IDEs, you can disable:
 
 :::
 
-## Repository structure
+## Repository Structure
 
-- Each assignment is in its own folder named `assignment-<number>`, e.g., `assignment-1`, `assignment-2`, etc.
+```
+databases/
+├── README.md                # This file
+├── syllabus.md              # Course syllabus
+├── LICENSE.md               # License information
+├── run-tests.sh             # Run verification for any assignment
+├── .github/workflows/       # GitHub Actions (do not modify)
+├── artifacts/               # CI/CD generated reports
+└── assignment-XX/           # Assignment folders
+    ├── README.md            # Assignment instructions
+    ├── docker-compose.yml   # Database container setup
+    ├── verify.sh            # Verification/grading script
+    ├── exercises/           # Exercise markdown files
+    ├── solutions/           # Model solutions (instructor only)
+    ├── sql/                 # Student submission folder
+    ├── base/                # (Optional) Pre-built schema
+    ├── data/                # (Optional) Sample data files
+    └── drizzle/             # (Optional) ORM exercises
+```
+
+### Assignment Folders
+
+- Each assignment is in its own folder named `assignment-XX`
 - Each assignment folder contains:
-    - `README.md`: Instructions for the assignment;
-    - `docker-compose.yml`: Docker Compose file to set up the required environment;
-    - Other files and folders as needed for the assignment, refer to the `README.md` in each assignment folder for details.
-- `.github/workflows/`: Contains GitHub Actions workflows for automated testing of assignments. **Do not modify these files**.
-- `.gitignore`: Specifies files and folders to be ignored by Git. You may modify this file if needed.
-- `scripts/`: Contains helper scripts for running tests and other tasks. Do not modify these files.
-- `reports/`: Will contain any generated files or outputs from assignments. Do not modify these files.
+    - `README.md`: Instructions for the assignment
+    - `docker-compose.yml`: Docker Compose file for the database environment
+    - `verify.sh`: Verification script for automated grading
+    - `exercises/`: Markdown files with exercise instructions
+    - `solutions/`: Model solutions (may be hidden from students)
+    - `sql/`: Directory for student SQL submissions
+
+### Running Tests
+
+Use the `run-tests.sh` script to verify any assignment:
+
+```bash
+./run-tests.sh assignment-01
+./run-tests.sh assignment-02
+# etc.
+```
 
 ## Testing Assignments
 
-- Each assignment includes automated tests that you can run locally using Docker.
-- You may want to check the tab "Actions" on GitHub to see the results of automated tests run on your submissions.
-- You may want to use `act` to run GitHub Actions workflows locally. Refer to [act documentation](https://github.com/nektos/act).
+### Quick Start (Recommended)
+
+Test your assignment locally before submitting:
+
+```bash
+# Start the database
+docker-compose up -d
+
+# Test a specific assignment (e.g., assignment 2)
+./test.sh 2
+
+# Or test all assignments
+./test.sh all
+```
+
+**Expected Output:**
+```
+========================================
+  Assignment X - Verification
+========================================
+...
+Total Points: 100 / 100
+Grade: A
+========================================
+```
+
+### Advanced Testing
+
+For detailed testing options and troubleshooting, see **[TESTING.md](TESTING.md)** which includes:
+- Direct testing with `./test.sh` (fastest)
+- Manual testing with environment variables
+- GitHub Actions simulation with `act`
+- Debugging tips and common issues
+- Quick reference card
+
+### Automated Testing on GitHub
+
+- Each assignment includes automated tests that run on GitHub Actions when you push
+- Check the "Actions" tab on GitHub to see test results
+- Tests verify:
+  - SQL syntax correctness
+  - Schema structure
+  - Data integrity
+  - Idempotency (can run multiple times)
+  - Query accuracy
 
 ## Node.js Setup Instructions
 

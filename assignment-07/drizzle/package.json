@@ -1,0 +1,27 @@
+{
+  "name": "precision-parts-drizzle",
+  "version": "1.0.0",
+  "description": "Drizzle ORM exercise for PrecisionParts Manufacturing",
+  "type": "module",
+  "scripts": {
+    "test": "npx tsx src/index.ts",
+    "test:connection": "npx tsx src/test-connection.ts",
+    "test:crud": "npx tsx src/tests/crud.test.ts",
+    "test:filters": "npx tsx src/tests/filters.test.ts",
+    "test:joins": "npx tsx src/tests/joins.test.ts",
+    "test:aggregation": "npx tsx src/tests/aggregation.test.ts",
+    "test:transactions": "npx tsx src/tests/transactions.test.ts",
+    "generate": "drizzle-kit generate",
+    "studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.0",
+    "postgres": "^3.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "drizzle-kit": "^0.28.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

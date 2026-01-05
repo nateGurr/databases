@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: medcare-db
+    environment:
+      POSTGRES_USER: medcare
+      POSTGRES_PASSWORD: medcare123
+      POSTGRES_DB: medcare
+    ports:
+      - "5433:5432"
+    volumes:
+      - medcare_data:/var/lib/postgresql/data
+      - ./base:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medcare -d medcare"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: medcare-adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
+volumes:
+  medcare_data:

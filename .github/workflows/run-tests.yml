@@ -13,13 +13,19 @@ jobs:
       matrix:
         assignment: ['01', '02', '03', '04', '05', '06', '07']
     
+    env:
+      CONTAINER_NAME: databases-postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Run assignment tests
-        run: ./scripts/run-test.sh assignment-${{ matrix.assignment }}
+        run: bash ./run-tests.sh assignment-${{ matrix.assignment }}
       
       - name: Commit and push changes
         run: |

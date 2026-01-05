@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: edulearn_postgres
+    environment:
+      POSTGRES_USER: edulearn
+      POSTGRES_PASSWORD: edulearn_pass
+      POSTGRES_DB: edulearn_lms
+    ports:
+      - "5434:5432"
+    volumes:
+      - edulearn_data:/var/lib/postgresql/data
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edulearn -d edulearn_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: edulearn_adminer
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  edulearn_data:

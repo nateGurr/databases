@@ -1,0 +1,35 @@
+services:
+  # Main PostgreSQL database for all assignments
+  postgres:
+    image: postgres:16-alpine
+    container_name: databases-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Adminer for database management
+  adminer:
+    image: adminer:latest
+    container_name: databases-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha-dark
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
