@@ -32,10 +32,10 @@ Alternativelly, you may want to follow this process on any **GOOD** GIT-GUI tool
    $ cd databases-public
    
    # If you pull / push over HTTPS
-   $ git push https://github.com/student/databases-private.git master
+   $ git push https://github.com/student/databases-private.git main
 
    # If you pull / push over SSH
-   $ git push git@github.com:student/databases-private.git master
+   $ git push git@github.com:student/databases-private.git main
    ```
    This copies everything in the public databases repository to your own private repository. You can now delete your local clone of the public repository:
    ```console
@@ -64,7 +64,7 @@ Alternativelly, you may want to follow this process on any **GOOD** GIT-GUI tool
    ```
 6. You can now pull in changes from the public databases repository as needed with:
    ```console
-   $ git pull public master
+   $ git pull public main
    ```
 7. **Enable GitHub Actions** from the project settings of your private repository on github.com;
    ```
