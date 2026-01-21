@@ -7,9 +7,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: precision_parts
     ports:
-      - "5435:5432"
+      - "5432:5432"
     volumes:
       - precision_parts_data:/var/lib/postgresql/data
+      - .:/app:rw
       - ./base:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -21,7 +22,7 @@ services:
     image: adminer:latest
     container_name: precision_parts_adminer
     ports:
-      - "8083:8080"
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy

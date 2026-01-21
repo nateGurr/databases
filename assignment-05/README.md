@@ -124,11 +124,11 @@ MedCare is a multi-specialty health clinic managing:
 
 3. Wait for initialization (~15 seconds), then verify:
    ```bash
-   ./verify.sh
+   docker-compose exec -T db ./verify.sh
    ```
 
 4. Access the database:
-   - **Adminer**: http://localhost:8081
+   - **Adminer**: http://localhost:8080
      - System: PostgreSQL
      - Server: db
      - Username: medcare
@@ -136,7 +136,7 @@ MedCare is a multi-specialty health clinic managing:
      - Database: medcare
    - **psql**: 
      ```bash
-     docker exec -it medcare-db psql -U medcare -d medcare
+     docker-compose exec db psql -U medcare -d medcare
      ```
 
 ## Exercises

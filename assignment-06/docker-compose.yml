@@ -7,9 +7,10 @@ services:
       POSTGRES_PASSWORD: pawcare123
       POSTGRES_DB: pawcare
     ports:
-      - "5434:5432"
+      - "5432:5432"
     volumes:
       - pawcare-data:/var/lib/postgresql/data
+      - .:/app:rw
       - ./base:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pawcare -d pawcare"]
@@ -21,7 +22,7 @@ services:
     image: adminer:latest
     container_name: pawcare-adminer
     ports:
-      - "8082:8080"
+      - "8080:8080"
     environment:
       ADMINER_DEFAULT_SERVER: pawcare-db
     depends_on:
