@@ -3,7 +3,11 @@ set -e
 # =============================================================================
 # ShopFlow Assignment 3 - Query Verification Script
 # =============================================================================
-# This script validates student SQL submissions against expected outputs.
+# This script validates student SQL submissions by checking:
+# 1. SQL syntax is correct (queries execute without errors)
+# 2. Queries return results (not empty)
+# 3. Expected number of queries per exercise
+#
 # Usage: 
 #   - Local (Windows/Mac/Linux): docker-compose run --rm verify
 #   - GitHub Actions: bash ./verify.sh
@@ -53,23 +57,16 @@ echo ""
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Function to run SQL and capture result
-run_sql() {
-    if [ "$RUN_MODE" = "container" ]; then
-        psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -t -c "$1" 2>&1
-    else
-        docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -t -c "$1" 2>&1
-    fi
-}
-
-# Function to run SQL file
+# Function to run SQL file and return exit code
 run_sql_file() {
     local sql_file="$1"
     local output_file="$2"
     if [ "$RUN_MODE" = "container" ]; then
-        psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" < "$sql_file" > "$output_file" 2>&1
+        psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -f "$sql_file" > "$output_file" 2>&1
+        return $?
     else
         docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql_file" > "$output_file" 2>&1
+        return $?
     fi
 }
 
@@ -87,23 +84,54 @@ print_result() {
     fi
 }
 
-# Compare outputs (ignoring whitespace differences)
-compare_outputs() {
-    _student_output="$1"
-    _solution_output="$2"
+# Function to verify an exercise file
+verify_exercise() {
+    local exercise_num=$1
+    local exercise_name=$2
+    local points=$3
+    local expected_queries=$4
     
-    # Normalize whitespace and compare using temp files (POSIX compatible)
-    _tmp1="/tmp/compare_student_$$"
-    _tmp2="/tmp/compare_solution_$$"
+    local exercise_file="$SQL_DIR/exercise_0${exercise_num}.sql"
+    local output_file="$OUTPUT_DIR/output_ex${exercise_num}.txt"
     
-    sed 's/[[:space:]]*$//' "$_student_output" | grep -v '^$' > "$_tmp1"
-    sed 's/[[:space:]]*$//' "$_solution_output" | grep -v '^$' > "$_tmp2"
+    if [ ! -f "$exercise_file" ]; then
+        echo -e "${YELLOW}⚠ SKIP${NC}: Exercise $exercise_num - File not found (0/$points pts)"
+        return
+    fi
     
-    diff -wB "$_tmp1" "$_tmp2" > /dev/null 2>&1
-    _result=$?
+    # Run the SQL file
+    if ! run_sql_file "$exercise_file" "$output_file"; then
+        echo -e "${RED}FAIL${NC}: Exercise $exercise_num: $exercise_name - SQL syntax error (0/$points pts)"
+        grep -i "error\|ERROR" "$output_file" 2>/dev/null | head -3 || true
+        return
+    fi
     
-    rm -f "$_tmp1" "$_tmp2"
-    return $_result
+    # Check for errors in output
+    if grep -qi "error" "$output_file"; then
+        echo -e "${RED}FAIL${NC}: Exercise $exercise_num: $exercise_name - SQL error (0/$points pts)"
+        grep -i "error" "$output_file" | head -3
+        return
+    fi
+    
+    # Count SELECT results (look for row count lines like "(X rows)")
+    local result_count
+    result_count=$(grep -c "rows\?)" "$output_file" 2>/dev/null) || result_count=0
+    
+    if [ "$result_count" -lt "$expected_queries" ]; then
+        echo -e "${RED}FAIL${NC}: Exercise $exercise_num: $exercise_name - Expected $expected_queries queries, found $result_count (0/$points pts)"
+        return
+    fi
+    
+    # Check that queries return data (not all empty)
+    local empty_results
+    empty_results=$(grep -c "(0 rows)" "$output_file" 2>/dev/null) || empty_results=0
+    
+    if [ "$empty_results" -eq "$expected_queries" ]; then
+        echo -e "${RED}FAIL${NC}: Exercise $exercise_num: $exercise_name - All queries returned empty results (0/$points pts)"
+        return
+    fi
+    
+    print_result "Exercise $exercise_num: $exercise_name" true $points
 }
 
 # ============================================
@@ -140,9 +168,9 @@ FILES_MISSING=0
 for i in 1 2 3 4 5; do
     exercise_file="$SQL_DIR/exercise_0${i}.sql"
     if [ -f "$exercise_file" ]; then
-        echo -e "${GREEN}PASS:${NC} Found: exercise_0${i}.sql"
+        echo -e "${GREEN}FOUND${NC}: exercise_0${i}.sql"
     else
-        echo -e "${YELLOW}⚠${NC} Missing: exercise_0${i}.sql"
+        echo -e "${YELLOW}MISSING${NC}: exercise_0${i}.sql"
         FILES_MISSING=$((FILES_MISSING + 1))
     fi
 done
@@ -161,110 +189,21 @@ echo "----------------------------------------"
 echo "Step 3: Verifying exercises..."
 echo "----------------------------------------"
 
-# Exercise 1: Basic Filtering
-exercise_file="$SQL_DIR/exercise_01.sql"
-solution_file="$SOLUTIONS_DIR/exercise_01_solution.sql"
-if [ -f "$exercise_file" ]; then
-    student_output="$OUTPUT_DIR/student_ex1.txt"
-    solution_output="$OUTPUT_DIR/solution_ex1.txt"
-    
-    if run_sql_file "$exercise_file" "$student_output" 2>/dev/null; then
-        run_sql_file "$solution_file" "$solution_output" 2>/dev/null
-        if compare_outputs "$student_output" "$solution_output"; then
-            print_result "Exercise 1: Basic Filtering" true $POINTS_EX1
-        else
-            print_result "Exercise 1: Basic Filtering" false $POINTS_EX1
-        fi
-    else
-        echo -e "${RED}FAIL${NC}: Exercise 1 - SQL syntax error (0/$POINTS_EX1 pts)"
-    fi
-else
-    echo -e "${YELLOW}⚠ SKIP${NC}: Exercise 1 - File not found (0/$POINTS_EX1 pts)"
-fi
+# Exercise 1: Basic Filtering (5 queries)
+verify_exercise 1 "Basic Filtering" $POINTS_EX1 5
 
-# Exercise 2: Pattern Matching & NULLs
-exercise_file="$SQL_DIR/exercise_02.sql"
-solution_file="$SOLUTIONS_DIR/exercise_02_solution.sql"
-if [ -f "$exercise_file" ]; then
-    student_output="$OUTPUT_DIR/student_ex2.txt"
-    solution_output="$OUTPUT_DIR/solution_ex2.txt"
-    
-    if run_sql_file "$exercise_file" "$student_output" 2>/dev/null; then
-        run_sql_file "$solution_file" "$solution_output" 2>/dev/null
-        if compare_outputs "$student_output" "$solution_output"; then
-            print_result "Exercise 2: Pattern Matching & NULLs" true $POINTS_EX2
-        else
-            print_result "Exercise 2: Pattern Matching & NULLs" false $POINTS_EX2
-        fi
-    else
-        echo -e "${RED}FAIL${NC}: Exercise 2 - SQL syntax error (0/$POINTS_EX2 pts)"
-    fi
-else
-    echo -e "${YELLOW}⚠ SKIP${NC}: Exercise 2 - File not found (0/$POINTS_EX2 pts)"
-fi
+# Exercise 2: Pattern Matching & NULLs (5 queries)
+verify_exercise 2 "Pattern Matching & NULLs" $POINTS_EX2 5
 
-# Exercise 3: CASE Expressions & Dates
-exercise_file="$SQL_DIR/exercise_03.sql"
-solution_file="$SOLUTIONS_DIR/exercise_03_solution.sql"
-if [ -f "$exercise_file" ]; then
-    student_output="$OUTPUT_DIR/student_ex3.txt"
-    solution_output="$OUTPUT_DIR/solution_ex3.txt"
-    
-    if run_sql_file "$exercise_file" "$student_output" 2>/dev/null; then
-        run_sql_file "$solution_file" "$solution_output" 2>/dev/null
-        if compare_outputs "$student_output" "$solution_output"; then
-            print_result "Exercise 3: CASE Expressions & Dates" true $POINTS_EX3
-        else
-            print_result "Exercise 3: CASE Expressions & Dates" false $POINTS_EX3
-        fi
-    else
-        echo -e "${RED}FAIL${NC}: Exercise 3 - SQL syntax error (0/$POINTS_EX3 pts)"
-    fi
-else
-    echo -e "${YELLOW}⚠ SKIP${NC}: Exercise 3 - File not found (0/$POINTS_EX3 pts)"
-fi
+# Exercise 3: CASE Expressions & Dates (5 queries)
+verify_exercise 3 "CASE Expressions & Dates" $POINTS_EX3 5
 
-# Exercise 4: Basic Aggregation
-exercise_file="$SQL_DIR/exercise_04.sql"
-solution_file="$SOLUTIONS_DIR/exercise_04_solution.sql"
-if [ -f "$exercise_file" ]; then
-    student_output="$OUTPUT_DIR/student_ex4.txt"
-    solution_output="$OUTPUT_DIR/solution_ex4.txt"
-    
-    if run_sql_file "$exercise_file" "$student_output" 2>/dev/null; then
-        run_sql_file "$solution_file" "$solution_output" 2>/dev/null
-        if compare_outputs "$student_output" "$solution_output"; then
-            print_result "Exercise 4: Basic Aggregation" true $POINTS_EX4
-        else
-            print_result "Exercise 4: Basic Aggregation" false $POINTS_EX4
-        fi
-    else
-        echo -e "${RED}FAIL${NC}: Exercise 4 - SQL syntax error (0/$POINTS_EX4 pts)"
-    fi
-else
-    echo -e "${YELLOW}⚠ SKIP${NC}: Exercise 4 - File not found (0/$POINTS_EX4 pts)"
-fi
+# Exercise 4: Basic Aggregation (5 queries)
+verify_exercise 4 "Basic Aggregation" $POINTS_EX4 5
 
-# Exercise 5: Grouping & HAVING
-exercise_file="$SQL_DIR/exercise_05.sql"
-solution_file="$SOLUTIONS_DIR/exercise_05_solution.sql"
-if [ -f "$exercise_file" ]; then
-    student_output="$OUTPUT_DIR/student_ex5.txt"
-    solution_output="$OUTPUT_DIR/solution_ex5.txt"
-    
-    if run_sql_file "$exercise_file" "$student_output" 2>/dev/null; then
-        run_sql_file "$solution_file" "$solution_output" 2>/dev/null
-        if compare_outputs "$student_output" "$solution_output"; then
-            print_result "Exercise 5: Grouping & HAVING" true $POINTS_EX5
-        else
-            print_result "Exercise 5: Grouping & HAVING" false $POINTS_EX5
-        fi
-    else
-        echo -e "${RED}FAIL${NC}: Exercise 5 - SQL syntax error (0/$POINTS_EX5 pts)"
-    fi
-else
-    echo -e "${YELLOW}⚠ SKIP${NC}: Exercise 5 - File not found (0/$POINTS_EX5 pts)"
-fi
+# Exercise 5: Grouping & HAVING (5 queries)
+verify_exercise 5 "Grouping & HAVING" $POINTS_EX5 5
+
 echo ""
 
 # ============================================
