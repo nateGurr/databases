@@ -107,14 +107,14 @@ To verify the data loaded correctly:
 
 ```bash
 # Connect to the database via docker compose
-docker-compose exec -T db psql -U shopflow_admin -d shopflow_db
+docker-compose exec postgres psql -U postgres -d postgres
 
 # Check table counts
-SELECT 'categories' as tbl, COUNT(*) FROM shopflow.categories
-UNION ALL SELECT 'products', COUNT(*) FROM shopflow.products
-UNION ALL SELECT 'customers', COUNT(*) FROM shopflow.customers
-UNION ALL SELECT 'orders', COUNT(*) FROM shopflow.orders
-UNION ALL SELECT 'order_items', COUNT(*) FROM shopflow.order_items;
+SELECT 'categories' as tbl, COUNT(*) FROM categories
+UNION ALL SELECT 'products', COUNT(*) FROM products
+UNION ALL SELECT 'customers', COUNT(*) FROM customers
+UNION ALL SELECT 'orders', COUNT(*) FROM orders
+UNION ALL SELECT 'order_items', COUNT(*) FROM order_items;
 ```
 
 ### Step 3: Access the Database
@@ -122,22 +122,22 @@ UNION ALL SELECT 'order_items', COUNT(*) FROM shopflow.order_items;
 **Option A: Adminer (Web UI)**
 - URL: http://localhost:8080
 - System: PostgreSQL
-- Server: db
-- Username: shopflow_admin
-- Password: shopflow_secure_2024
-- Database: shopflow_db
+- Server: postgres
+- Username: postgres
+- Password: postgres
+- Database: postgres
 
 **Option B: Command Line**
 ```bash
-docker-compose exec db psql -U shopflow_admin -d shopflow_db
+docker-compose exec postgres psql -U postgres -d postgres
 ```
 
 **Option C: External Client (DBeaver, DataGrip)**
 - Host: localhost
 - Port: 5432
-- Database: shopflow_db
-- User: shopflow_admin
-- Password: shopflow_secure_2024
+- Database: postgres
+- User: postgres
+- Password: postgres
 
 ## Exercises
 
@@ -182,7 +182,7 @@ Each file should contain numbered queries matching the exercise requirements.
 Your submission will be tested using `verify.sh` via docker compose:
 
 ```bash
-docker-compose exec -T db ./verify.sh
+docker-compose run --rm verify
 ```
 
 The script will:
@@ -253,6 +253,6 @@ assignment/
 ## Submission
 
 1. Ensure all 5 SQL files are in the `sql/` folder
-2. Run `./verify.sh` to check your work via `docker-compose exec -T postgres ./verify.sh`
+2. Run `docker-compose run --rm verify` to check your work
 3. Commit and push to your repository
 4. GitHub Actions will run automated tests

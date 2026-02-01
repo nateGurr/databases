@@ -102,7 +102,7 @@ Before submitting, run the verification script:
 docker-compose up -d
 
 # Run the verification script via docker compose
-docker-compose exec -T postgres ./verify.sh
+docker-compose run --rm verify
 
 # Or test manually - run schema twice to check idempotency:
 docker-compose exec -T postgres psql -U postgres -d postgres -f sql/01_schema.sql

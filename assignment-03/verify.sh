@@ -1,14 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 # =============================================================================
 # ShopFlow Assignment 3 - Query Verification Script
 # =============================================================================
 # This script validates student SQL submissions against expected outputs.
-# Usage: ./verify.sh [exercise_number]
-# Example: ./verify.sh 1  (to verify exercise 1 only)
-#          ./verify.sh    (to verify all exercises)
+# Usage: 
+#   - Local (Windows/Mac/Linux): docker-compose run --rm verify
+#   - GitHub Actions: bash ./verify.sh
 # =============================================================================
-
-set -e
 
 # Colors for output
 RED='\033[0;31m'
@@ -17,12 +16,23 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-CONTAINER_NAME="${CONTAINER_NAME:-databases-postgres}"
-DB_USER="${DB_USER:-postgres}"
-DB_NAME="${DB_NAME:-shopflow_db}"
-SQL_DIR="./sql"
-SOLUTIONS_DIR="./solutions"
-OUTPUT_DIR="./output"
+CONTAINER_NAME="${CONTAINER_NAME:-postgres}"
+DB_USER="${PGUSER:-postgres}"
+DB_NAME="${PGDATABASE:-postgres}"
+
+# Detect if running inside container or on host
+if [ -n "$PGHOST" ]; then
+    # Running inside container (docker-compose run verify)
+    RUN_MODE="container"
+    DB_HOST="$PGHOST"
+    SQL_DIR="/sql"
+else
+    # Running on host (GitHub Actions or local bash)
+    RUN_MODE="host"
+    SQL_DIR="./sql"
+fi
+
+OUTPUT_DIR="/tmp/output"
 
 # Score tracking
 TOTAL_POINTS=0
@@ -45,14 +55,22 @@ mkdir -p "$OUTPUT_DIR"
 
 # Function to run SQL and capture result
 run_sql() {
-    docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -t -c "$1" 2>&1
+    if [ "$RUN_MODE" = "container" ]; then
+        psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -t -c "$1" 2>&1
+    else
+        docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -t -c "$1" 2>&1
+    fi
 }
 
 # Function to run SQL file
 run_sql_file() {
     local sql_file="$1"
     local output_file="$2"
-    docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql_file" > "$output_file" 2>&1
+    if [ "$RUN_MODE" = "container" ]; then
+        psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" < "$sql_file" > "$output_file" 2>&1
+    else
+        docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" < "$sql_file" > "$output_file" 2>&1
+    fi
 }
 
 # Function to print test result
@@ -71,27 +89,44 @@ print_result() {
 
 # Compare outputs (ignoring whitespace differences)
 compare_outputs() {
-    local student_output="$1"
-    local solution_output="$2"
+    _student_output="$1"
+    _solution_output="$2"
     
-    # Normalize whitespace and compare
-    diff -wB <(cat "$student_output" | sed 's/[[:space:]]*$//' | grep -v '^$') \
-             <(cat "$solution_output" | sed 's/[[:space:]]*$//' | grep -v '^$') > /dev/null 2>&1
+    # Normalize whitespace and compare using temp files (POSIX compatible)
+    _tmp1="/tmp/compare_student_$$"
+    _tmp2="/tmp/compare_solution_$$"
+    
+    sed 's/[[:space:]]*$//' "$_student_output" | grep -v '^$' > "$_tmp1"
+    sed 's/[[:space:]]*$//' "$_solution_output" | grep -v '^$' > "$_tmp2"
+    
+    diff -wB "$_tmp1" "$_tmp2" > /dev/null 2>&1
+    _result=$?
+    
+    rm -f "$_tmp1" "$_tmp2"
+    return $_result
 }
 
 # ============================================
 # STEP 1: Check environment
 # ============================================
 echo "----------------------------------------"
-echo "Step 1: Checking environment..."
+echo "Step 1: Checking database connection..."
 echo "----------------------------------------"
 
-if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    echo -e "${RED}Error: Container '$CONTAINER_NAME' is not running.${NC}"
-    echo "Please start the database with: docker-compose up -d"
-    exit 1
+if [ "$RUN_MODE" = "container" ]; then
+    if ! psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1" > /dev/null 2>&1; then
+        echo -e "${RED}Error: Cannot connect to database.${NC}"
+        echo "Please make sure the database is running with: docker-compose up -d"
+        exit 1
+    fi
+else
+    if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        echo -e "${RED}Error: Container '$CONTAINER_NAME' is not running.${NC}"
+        echo "Please start the database with: docker-compose up -d"
+        exit 1
+    fi
 fi
-echo -e "${GREEN}PASS:${NC} Container '$CONTAINER_NAME' is running"
+echo -e "${GREEN}PASS:${NC} Database connection successful"
 echo ""
 
 # ============================================

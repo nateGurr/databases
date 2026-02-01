@@ -119,10 +119,10 @@ You should end up with approximately these entities:
 docker-compose up -d
 
 # Run verification via docker compose
-docker-compose exec -T postgres ./verify.sh
+docker-compose run --rm verify
 
 # Manual testing via docker compose
-docker-compose exec -T postgres psql -U edulearn -d edulearn_lms -f /sql/02_schema.sql
+docker-compose exec -T postgres psql -U postgres -d postgres -f /sql/02_schema.sql
 ```
 
 ## Submission
