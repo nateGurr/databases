@@ -47,7 +47,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "/verify.sh"]
+    entrypoint: ["/bin/bash", "/verify.sh"]
     profiles:
       - tools
 

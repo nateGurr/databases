@@ -77,10 +77,15 @@ if [ "$RUN_MODE" = "container" ]; then
         exit 1
     fi
 else
+    # Start docker-compose if postgres is not running
     if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-        echo "${RED}Error: Container '$CONTAINER_NAME' is not running.${NC}"
-        echo "Please start the database with: docker-compose up -d"
-        exit 1
+        echo "Starting PostgreSQL via docker compose..."
+        docker compose down -v --remove-orphans 2>/dev/null || true
+        docker compose up -d postgres
+        echo "Waiting for PostgreSQL to be ready..."
+        until docker exec "$CONTAINER_NAME" pg_isready -U "$DB_USER" > /dev/null 2>&1; do
+            sleep 1
+        done
     fi
 fi
 echo "${GREEN}PASS:${NC} Database connection successful"

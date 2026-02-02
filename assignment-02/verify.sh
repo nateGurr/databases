@@ -98,6 +98,21 @@ echo -e "${GREEN}PASS:${NC} Found: 02_seed.sql"
 echo ""
 
 # ============================================
+# STEP 0: Ensure database is running
+# ============================================
+if [ "$RUN_MODE" = "host" ]; then
+    if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        echo "Starting PostgreSQL via docker compose..."
+        docker compose down -v --remove-orphans 2>/dev/null || true
+        docker compose up -d postgres
+        echo "Waiting for PostgreSQL to be ready..."
+        until docker exec "$CONTAINER_NAME" pg_isready -U "$DB_USER" > /dev/null 2>&1; do
+            sleep 1
+        done
+    fi
+fi
+
+# ============================================
 # STEP 1: Clean slate - drop the schema
 # ============================================
 echo "----------------------------------------"
