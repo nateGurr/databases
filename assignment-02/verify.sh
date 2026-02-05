@@ -355,8 +355,10 @@ else
 fi
 
 # Check for pending old transactions
-PENDING_OLD=$(run_sql "SELECT COUNT(*) FROM neobank.transactions WHERE status = 'pending' AND created_at < NOW() - INTERVAL '24 hours' AND amount > 1000;")
-if [ "$(echo $PENDING_OLD | tr -d ' ')" -ge "3" ]; then
+PENDING_OLD=$(run_sql "SELECT COUNT(*) FROM neobank.transactions WHERE status = 'pending' AND created_at < NOW() - INTERVAL '24 hours' AND amount > 1000;") || true
+PENDING_OLD=$(echo $PENDING_OLD | tr -d ' ')
+PENDING_OLD=${PENDING_OLD:-0}
+if [ "$PENDING_OLD" -ge "3" ] 2>/dev/null; then
     print_result "At least 3 pending transactions > 1000 older than 24h" true 5
 else
     print_result "At least 3 pending transactions > 1000 older than 24h" false 5
