@@ -29,9 +29,8 @@
 -- =============================================================================
 -- Accounts
 -- Insert accounts for customers, linking to account types
--- Tip: Use subqueries to get customer_id and account_type_id from their respective tables
--- Example: INSERT INTO neobank.accounts (customer_id, account_type_id, ...)
---   SELECT id FROM neobank.customers WHERE ... LIMIT 1
+-- Tip: First query the customers and account_types tables to find the IDs you need
+-- Then use those IDs directly in your INSERT statements
 -- Use ON CONFLICT (account_number) DO NOTHING for idempotency
 -- =============================================================================
 -- TODO: Write your INSERT statements here
