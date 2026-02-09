@@ -86,7 +86,7 @@
 -- GRADES (only for completed enrollments with grades)
 -- 
 -- From the CSV, insert grade records only where grades exist.
--- Use complex subquery to get enrollment_id from student email and course code.
+-- Use enrollment_id to link to the enrollments table.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
 
