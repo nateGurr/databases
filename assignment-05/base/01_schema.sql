@@ -29,6 +29,7 @@ CREATE TABLE medcare.departments (
 CREATE TABLE medcare.specializations (
     specialization_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    category VARCHAR(100) NOT NULL,
     description TEXT,
     requires_certification BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

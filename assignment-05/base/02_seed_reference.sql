@@ -19,32 +19,32 @@ INSERT INTO medcare.departments (name, building, floor, phone, email) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Specializations
-INSERT INTO medcare.specializations (name, description, requires_certification) VALUES
-('Interventional Cardiology', 'Catheter-based treatment of heart diseases', true),
-('Electrophysiology', 'Diagnosis and treatment of heart rhythm disorders', true),
-('General Cardiology', 'Diagnosis and treatment of heart conditions', true),
-('Stroke Neurology', 'Specialized care for stroke patients', true),
-('Epilepsy', 'Treatment of seizure disorders', true),
-('Movement Disorders', 'Parkinson''s and other movement conditions', true),
-('Sports Medicine', 'Treatment of sports-related injuries', true),
-('Joint Replacement', 'Hip, knee, and shoulder replacement surgery', true),
-('Spine Surgery', 'Surgical treatment of spinal conditions', true),
-('General Pediatrics', 'Primary care for children', true),
-('Pediatric Cardiology', 'Heart conditions in children', true),
-('Primary Care', 'General adult healthcare', false),
-('Geriatrics', 'Care for elderly patients', true),
-('Medical Dermatology', 'Skin disease treatment', true),
-('Cosmetic Dermatology', 'Aesthetic skin procedures', false),
-('Surgical Oncology', 'Cancer surgery', true),
-('Medical Oncology', 'Cancer treatment with medications', true),
-('Child Psychiatry', 'Mental health for children', true),
-('Adult Psychiatry', 'Mental health for adults', true),
-('Addiction Medicine', 'Treatment of substance use disorders', true),
-('Maternal-Fetal Medicine', 'High-risk pregnancy care', true),
-('Emergency Medicine', 'Acute care and trauma', true),
-('Diagnostic Radiology', 'Medical imaging interpretation', true),
-('Interventional Radiology', 'Image-guided procedures', true),
-('Hepatology', 'Liver disease treatment', true)
+INSERT INTO medcare.specializations (name, category, description, requires_certification) VALUES
+('Interventional Cardiology', 'Cardiology', 'Catheter-based treatment of heart diseases', true),
+('Electrophysiology', 'Cardiology', 'Diagnosis and treatment of heart rhythm disorders', true),
+('General Cardiology', 'Cardiology', 'Diagnosis and treatment of heart conditions', true),
+('Stroke Neurology', 'Neurology', 'Specialized care for stroke patients', true),
+('Epilepsy', 'Neurology', 'Treatment of seizure disorders', true),
+('Movement Disorders', 'Neurology', 'Parkinson''s and other movement conditions', true),
+('Sports Medicine', 'Orthopedics', 'Treatment of sports-related injuries', true),
+('Joint Replacement', 'Orthopedics', 'Hip, knee, and shoulder replacement surgery', true),
+('Spine Surgery', 'Orthopedics', 'Surgical treatment of spinal conditions', true),
+('General Pediatrics', 'Pediatrics', 'Primary care for children', true),
+('Pediatric Cardiology', 'Pediatrics', 'Heart conditions in children', true),
+('Primary Care', 'Internal Medicine', 'General adult healthcare', false),
+('Geriatrics', 'Internal Medicine', 'Care for elderly patients', true),
+('Medical Dermatology', 'Dermatology', 'Skin disease treatment', true),
+('Cosmetic Dermatology', 'Dermatology', 'Aesthetic skin procedures', false),
+('Surgical Oncology', 'Oncology', 'Cancer surgery', true),
+('Medical Oncology', 'Oncology', 'Cancer treatment with medications', true),
+('Child Psychiatry', 'Psychiatry', 'Mental health for children', true),
+('Adult Psychiatry', 'Psychiatry', 'Mental health for adults', true),
+('Addiction Medicine', 'Psychiatry', 'Treatment of substance use disorders', true),
+('Maternal-Fetal Medicine', 'Obstetrics', 'High-risk pregnancy care', true),
+('Emergency Medicine', 'Emergency Medicine', 'Acute care and trauma', true),
+('Diagnostic Radiology', 'Radiology', 'Medical imaging interpretation', true),
+('Interventional Radiology', 'Radiology', 'Image-guided procedures', true),
+('Hepatology', 'Gastroenterology', 'Liver disease treatment', true)
 ON CONFLICT DO NOTHING;
 
 -- Insurance Providers
