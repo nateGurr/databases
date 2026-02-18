@@ -2,6 +2,7 @@
 -- MedCare Seed Data - Part 5: Diagnoses and Prescriptions
 -- =============================================================================
 
+SET search_path TO medcare, public;
 
 -- Diagnoses (linked to appointments)
 INSERT INTO diagnoses (appointment_id, icd_code, description, severity, is_primary, notes) VALUES
