@@ -6,7 +6,7 @@
 -- Use ON CONFLICT DO NOTHING for idempotency
 -- =============================================================================
 
-SET search_path TO edulearn, public;
+-- All tables are in the public schema (default)
 
 -- =============================================================================
 -- DEPARTMENTS (extract unique departments from CSV)
@@ -15,17 +15,17 @@ SET search_path TO edulearn, public;
 -- Example departments: Computer Science (Tech Building), Business (Commerce Hall), etc.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
--- Tip: INSERT INTO edulearn.departments (name, building) VALUES (...) ON CONFLICT (name) DO NOTHING;
+-- Tip: INSERT INTO departments (name, building) VALUES (...) ON CONFLICT (name) DO NOTHING;
 
 
 -- =============================================================================
 -- INSTRUCTORS (extract unique instructors from CSV)
 -- 
 -- From the CSV, identify unique instructors with their details.
--- Use subquery to get department_id by name.
+-- Link to departments using department_id.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
--- Tip: Use subquery: (SELECT department_id FROM edulearn.departments WHERE name = '...')
+-- Tip: First query departments table to find IDs, then use those IDs in your INSERT
 
 
 -- =============================================================================
@@ -50,7 +50,7 @@ SET search_path TO edulearn, public;
 -- COURSES (extract unique courses from CSV)
 -- 
 -- From the CSV, identify unique courses with their details.
--- Link to instructor using subquery on instructor email.
+-- Link to instructor using instructor_id.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
 
@@ -77,7 +77,7 @@ SET search_path TO edulearn, public;
 -- ENROLLMENTS (create junction table entries)
 -- 
 -- From the CSV, create enrollment records for each student-course combination.
--- Use subqueries to get student_id and course_id from email and code.
+-- Use student_id and course_id foreign keys to link records.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
 
@@ -86,7 +86,7 @@ SET search_path TO edulearn, public;
 -- GRADES (only for completed enrollments with grades)
 -- 
 -- From the CSV, insert grade records only where grades exist.
--- Use complex subquery to get enrollment_id from student email and course code.
+-- Use enrollment_id to link to the enrollments table.
 -- =============================================================================
 -- TODO: Write your INSERT statements here
 
