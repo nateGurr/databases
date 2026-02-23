@@ -28,7 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
       
       - name: Run assignment tests
         run: bash ./run-tests.sh assignment-${{ matrix.assignment }}
