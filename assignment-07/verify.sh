@@ -403,12 +403,22 @@ NODE_MODULES_DIR="$DRIZZLE_DIR/node_modules"
 if [ -f "$PACKAGE_JSON" ]; then
     if ! command -v npm >/dev/null 2>&1; then
         echo -e "${YELLOW}BONUS SKIP${NC}: npm not available (0/20 pts)"
-    elif [ ! -d "$NODE_MODULES_DIR" ]; then
-        echo -e "${YELLOW}BONUS SKIP${NC}: Drizzle dependencies not installed (run npm install) (0/20 pts)"
     else
-        CONN_LOG="$OUTPUT_DIR/drizzle_connection.txt"
-        if run_bonus_cmd "$CONN_LOG" npm run test:connection; then
-            print_bonus_result "Drizzle connection test" "true" 0
+        INSTALL_OK=true
+        if [ ! -d "$NODE_MODULES_DIR" ]; then
+            INSTALL_LOG="$OUTPUT_DIR/drizzle_install.txt"
+            echo "Installing Drizzle dependencies..."
+            if ! run_bonus_cmd "$INSTALL_LOG" npm install; then
+                echo -e "${YELLOW}BONUS SKIP${NC}: Drizzle dependencies install failed (0/20 pts)"
+                echo -e "${YELLOW}BONUS SKIP${NC}: Check $INSTALL_LOG for details"
+                INSTALL_OK=false
+            fi
+        fi
+
+        if [ "$INSTALL_OK" = "true" ]; then
+            CONN_LOG="$OUTPUT_DIR/drizzle_connection.txt"
+            if run_bonus_cmd "$CONN_LOG" npm run test:connection; then
+                print_bonus_result "Drizzle connection test" "true" 0
 
             CRUD_LOG="$OUTPUT_DIR/drizzle_crud.txt"
             if run_bonus_cmd "$CRUD_LOG" npm run test:crud; then
@@ -444,9 +454,10 @@ if [ -f "$PACKAGE_JSON" ]; then
             else
                 print_bonus_result "5.5 Transaction tests" "false" 3
             fi
-        else
-            print_bonus_result "Drizzle connection test" "false" 0
-            echo -e "${YELLOW}BONUS SKIP${NC}: Drizzle tests skipped due to connection failure"
+            else
+                print_bonus_result "Drizzle connection test" "false" 0
+                echo -e "${YELLOW}BONUS SKIP${NC}: Drizzle tests skipped due to connection failure"
+            fi
         fi
     fi
 else
