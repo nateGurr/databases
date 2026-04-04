@@ -151,21 +151,26 @@ After creating the view, create a unique index on `clinic_id` to allow concurren
 
 Write the REFRESH command for this view.
 
-### Task 5.5: Comparing Regular vs Materialized Views (4 points)
+### Task 5.5: Refresh Materialized View (2 points)
 
-**Part A**: Create a regular view called `v_vet_productivity` and a materialized view called `mv_vet_productivity` with the same content:
+Write the commands to refresh the materialized view created in Task 5.4:
+- **Option A**: Full refresh (blocks queries during refresh)
+- **Option B**: Concurrent refresh (allows queries during refresh, requires unique index)
 
-- `vet_id`, `vet_name`
-- `total_appointments`
-- `total_treatments`
-- `total_prescriptions`
-- `avg_appointments_per_month`
-- `most_common_procedure` (the procedure they perform most)
+For Option B, you will also need to create a unique index on the materialized view first.
 
-**Part B**: In SQL comments, explain:
-1. When would you choose the regular view over the materialized view?
-2. When would you choose the materialized view?
-3. How would you keep the materialized view up-to-date in a production system?
+### Task 5.6: Views for Security (2 points)
+
+Create a view called `v_patient_records_limited` that provides access to medical records without exposing sensitive financial data. Include:
+- `pet_name`
+- `owner_name` (anonymized: first initial + last name)
+- `appointment_date`
+- `diagnosis`
+- `treatment`
+
+Exclude all billing information and full owner details.
+
+In a comment, explain how views provide a layer of data security.
 
 ---
 
@@ -185,7 +190,10 @@ With CHECK OPTION, attempts to change status to anything other than 'scheduled' 
 `mv_clinic_performance` should return 5 rows (one per clinic) with aggregated metrics.
 
 ### Task 5.5
-Both views should return the same data, but with different performance characteristics.
+The `REFRESH MATERIALIZED VIEW` command should execute successfully. The concurrent version requires a unique index.
+
+### Task 5.6
+`v_patient_records_limited` should return medical visit data with anonymized owner names and no billing columns.
 
 ---
 
@@ -195,21 +203,20 @@ Both views should return the same data, but with different performance character
 -- List all views
 SELECT table_name, table_type 
 FROM information_schema.tables 
-WHERE table_schema = 'pawcare' AND table_type = 'VIEW';
+WHERE table_type = 'VIEW';
 
 -- View definition
-SELECT pg_get_viewdef('pawcare.v_pet_directory', true);
+SELECT pg_get_viewdef('v_pet_directory', true);
 
 -- Drop view
-DROP VIEW IF EXISTS pawcare.v_pet_directory;
+DROP VIEW IF EXISTS v_pet_directory;
 
 -- Drop materialized view
-DROP MATERIALIZED VIEW IF EXISTS pawcare.mv_clinic_performance;
+DROP MATERIALIZED VIEW IF EXISTS mv_clinic_performance;
 
 -- Check if materialized view needs refresh
 SELECT relname, last_vacuum, last_analyze 
-FROM pg_stat_user_tables 
-WHERE schemaname = 'pawcare';
+FROM pg_stat_user_tables;
 ```
 
 ---

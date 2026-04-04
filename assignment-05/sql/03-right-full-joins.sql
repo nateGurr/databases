@@ -3,6 +3,7 @@
 -- MedCare Health Clinic - SQL Joins Assignment
 -- =============================================================================
 
+
 -- Problem 3.1 (4 points)
 -- RIGHT JOIN: All Departments with Doctor Counts
 -- Return: department_name, location, doctor_count
@@ -40,15 +41,12 @@
 
 
 -- Problem 3.4 (4 points)
--- FULL OUTER JOIN: Department-Specialization Matrix
--- Return: department_name, specialization_name, match_status
--- match_status values:
---   - 'Matched' (both exist and match)
---   - 'Department only' (department has no matching specialization)
---   - 'Specialization only' (specialization has no matching department)
--- Order by: match_status priority, department name, specialization name
+-- FULL OUTER JOIN: Department-Specialization Coverage
+-- Return: department_name, specialization_name, category
+-- Join: specializations.category = departments.name
+-- Order by: department name, then specialization name
 -- Tables: departments, specializations
--- Tip: Match using pattern matching (ILIKE) on names
+-- Tip: FULL OUTER JOIN on s.category = d.name
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
 

@@ -25,7 +25,7 @@ By completing this assignment, you will:
 4. Design **triggers** for automatic audit trails
 5. Use **transactions** to ensure data integrity
 6. Understand **access control** with GRANT/REVOKE
-7. Apply **Drizzle ORM** for type-safe database access
+7. *(Bonus)* Apply **Drizzle ORM** for type-safe database access
 
 ## Database Schema
 
@@ -91,7 +91,7 @@ By completing this assignment, you will:
 
 ### Prerequisites
 - Docker and Docker Compose installed
-- Node.js 18+ (for Drizzle ORM exercise)
+- Node.js 18+ (optional, for Drizzle ORM bonus exercise)
 - A SQL client (Adminer is included, or use your preferred tool)
 
 ### Setup
@@ -107,15 +107,15 @@ By completing this assignment, you will:
    ```
 
 3. **Access the database:**
-   - **Adminer (Web UI):** http://localhost:8083
+   - **Adminer (Web UI):** http://localhost:8080
      - System: PostgreSQL
-     - Server: db
+     - Server: postgres
      - Username: postgres
      - Password: postgres
-     - Database: precision_parts
-   - **Direct connection:** `postgresql://postgres:postgres@localhost:5435/precision_parts`
+     - Database: postgres
+   - **Direct connection:** `postgresql://postgres:postgres@localhost:5432/postgres`
 
-4. **Install Node.js dependencies (for Exercise 5):**
+4. **Install Node.js dependencies (optional, for Bonus Exercise 5):**
    ```bash
    cd drizzle
    npm install
@@ -136,14 +136,14 @@ docker-compose down -v     # Stop and remove data volumes
 | [Exercise 2](exercises/02-functions.md) | SQL Functions | 20 |
 | [Exercise 3](exercises/03-triggers.md) | Triggers & Audit Trails | 20 |
 | [Exercise 4](exercises/04-transactions.md) | Transactions & ACID | 25 |
-| [Exercise 5](exercises/05-drizzle-orm.md) | Drizzle ORM Integration | 20 |
-| **Total** | | **100** |
+| [Bonus Exercise 5](exercises/05-drizzle-orm.md) | Drizzle ORM Integration | **+20 bonus** |
+| **Total (required)** | | **80** |
 
 ## Submission
 
 1. Complete all exercises in the `sql/` directory
-2. Complete the Drizzle ORM exercise in `drizzle/src/`
-3. Run `./verify.sh` to validate your solutions
+2. *(Optional bonus)* Complete the Drizzle ORM exercise in `drizzle/src/`
+3. Run `docker-compose run --rm verify` to validate your solutions
 4. Commit and push your changes to GitHub
 
 ## Grading Rubric
@@ -154,14 +154,10 @@ docker-compose down -v     # Stop and remove data volumes
 | Functions return expected results | 20 |
 | Triggers properly maintain audit logs | 20 |
 | Transactions handle rollback scenarios | 25 |
-| Drizzle ORM queries are type-safe and functional | 20 |
+| Drizzle ORM queries are type-safe and functional | **Bonus 20** |
 | Code is well-formatted and commented | Bonus 5 |
 
 ## Resources
 
-- [Schema Patterns Reading](../schema-patterns.md)
-- [Functions, Procedures & Triggers Reading](../functions-procedures-triggers.md)
-- [Transactions Reading](../transactions.md)
-- [Access Control Reading](../access-control.md)
 - [Drizzle ORM Documentation](https://orm.drizzle.team/)
 - [PostgreSQL Functions Documentation](https://www.postgresql.org/docs/current/sql-createfunction.html)

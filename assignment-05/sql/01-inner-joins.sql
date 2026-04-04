@@ -3,6 +3,7 @@
 -- MedCare Health Clinic - SQL Joins Assignment
 -- =============================================================================
 
+
 -- Problem 1.1 (4 points)
 -- Basic Two-Table Join: Completed appointments with patient and doctor names
 -- Return: patient_name (full name), doctor_name (full name), scheduled_at, visit_type, reason
@@ -50,6 +51,6 @@
 -- Filter: Only departments with more than 5 total appointments
 -- Order by: department_name, appointment_count descending
 -- Tables: departments, doctors, appointments
--- Tip: Use subquery in WHERE to filter departments, then GROUP BY doctor
+-- Tip: Join all three tables, use GROUP BY doctor, then filter with HAVING
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here

@@ -124,19 +124,19 @@ MedCare is a multi-specialty health clinic managing:
 
 3. Wait for initialization (~15 seconds), then verify:
    ```bash
-   ./verify.sh
+   docker-compose run --rm verify
    ```
 
 4. Access the database:
-   - **Adminer**: http://localhost:8081
+   - **Adminer**: http://localhost:8080
      - System: PostgreSQL
-     - Server: db
-     - Username: medcare
-     - Password: medcare123
-     - Database: medcare
+     - Server: postgres
+     - Username: postgres
+     - Password: postgres
+     - Database: postgres
    - **psql**: 
      ```bash
-     docker exec -it medcare-db psql -U medcare -d medcare
+     docker-compose exec postgres psql -U postgres -d postgres
      ```
 
 ## Exercises
@@ -154,11 +154,11 @@ MedCare is a multi-specialty health clinic managing:
 ## Submission Requirements
 
 1. Create SQL files in the `sql/` directory:
-   - `exercise01.sql`
-   - `exercise02.sql`
-   - `exercise03.sql`
-   - `exercise04.sql`
-   - `exercise05.sql`
+   - `01-inner-joins.sql`
+   - `02-left-joins.sql`
+   - `03-right-full-joins.sql`
+   - `04-self-joins.sql`
+   - `05-multi-table-joins.sql`
 
 2. Each file should:
    - Include comments identifying each task

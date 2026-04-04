@@ -1,7 +1,5 @@
 # Assignment 04 — Database Normalization: EduLearn LMS
 
-![Normalization](https://i.imgflip.com/2/4acd7j.jpg)
-
 ## Overview
 
 In this assignment, you will analyze a poorly designed database, identify normalization problems, and design a properly normalized schema for **EduLearn**, an online Learning Management System (LMS). You will apply normalization theory to eliminate data anomalies and create an efficient, maintainable database structure.
@@ -31,14 +29,14 @@ By completing this assignment, you will demonstrate proficiency in:
 
 1. Navigate to the `assignment-04` folder in your terminal
 2. Run `docker-compose up -d` to start PostgreSQL and Adminer
-3. Connect via Adminer (`http://localhost:8082`) or your preferred client
+3. Connect via Adminer (`http://localhost:8080`) or your preferred client
 4. Review the problematic data in `data/unnormalized_lms.csv`
 
 ## File Structure
 
 ```
 assignment-04/
-├── docker-compose.yml          # Provided - PostgreSQL on port 5434
+├── docker-compose.yml          # Provided - PostgreSQL on port 5432
 ├── README.md                   # This file
 ├── verify.sh                   # Grading script (DO NOT MODIFY)
 ├── data/
@@ -49,7 +47,6 @@ assignment-04/
 │   ├── 03-implementation.md    # Write DDL & seed data
 │   └── 04-indexing.md          # Add appropriate indexes
 └── sql/                        # Your solutions go here
-    ├── 01_analysis.md          # Written analysis (Markdown)
     ├── 02_schema.sql           # Normalized DDL
     ├── 03_seed.sql             # Insert statements
     └── 04_indexes.sql          # Index definitions
@@ -73,7 +70,7 @@ Complete each exercise in order:
 
 | Exercise | File to Create | Topic | Points |
 |----------|----------------|-------|--------|
-| [Exercise 1](exercises/01-analysis.md) | `sql/01_analysis.md` | Identify anomalies & functional dependencies | 25 |
+| [Exercise 1](exercises/01-analysis.md) | Canvas Quiz | Identify anomalies & functional dependencies | 25 |
 | [Exercise 2](exercises/02-normalization.md) | `sql/02_schema.sql` | Design normalized schema (3NF) | 35 |
 | [Exercise 3](exercises/03-implementation.md) | `sql/03_seed.sql` | Populate with seed data | 20 |
 | [Exercise 4](exercises/04-indexing.md) | `sql/04_indexes.sql` | Create appropriate indexes | 20 |
@@ -120,11 +117,11 @@ You should end up with approximately these entities:
 # Start containers
 docker-compose up -d
 
-# Run verification
-./verify.sh
+# Run verification via docker compose
+docker-compose run --rm verify
 
-# Manual testing
-docker exec -it edulearn_postgres psql -U edulearn -d edulearn_lms -f /sql/02_schema.sql
+# Manual testing via docker compose
+docker-compose exec -T postgres psql -U postgres -d postgres -f /sql/02_schema.sql
 ```
 
 ## Submission
@@ -136,22 +133,12 @@ docker exec -it edulearn_postgres psql -U edulearn -d edulearn_lms -f /sql/02_sc
 
 ## Common Mistakes to Avoid
 
-- ❌ Keeping multi-valued attributes in a single column
-- ❌ Creating tables that still have partial dependencies
-- ❌ Forgetting junction tables for M:N relationships
-- ❌ Not identifying transitive dependencies
-- ❌ Over-normalizing (splitting data that belongs together)
-- ❌ Forgetting foreign key constraints
-- ❌ Creating indexes on every column (be strategic!)
-- ❌ Not using appropriate data types
+- Keeping multi-valued attributes in a single column
+- Creating tables that still have partial dependencies
+- Forgetting junction tables for M:N relationships
+- Not identifying transitive dependencies
+- Over-normalizing (splitting data that belongs together)
+- Forgetting foreign key constraints
+- Creating indexes on every column (be strategic!)
+- Not using appropriate data types
 
-## Resources
-
-- [Normalization Theory](../04-normalization/normalization-theory.md)
-- [Entity Relationships](../04-normalization/entity-relationships.md)
-- [Indexing Fundamentals](../04-normalization/indexing-fundamentals.md)
-- [Practical Normalization](../04-normalization/practical-normalization.md)
-
----
-
-Good luck normalizing the chaos! 📚
