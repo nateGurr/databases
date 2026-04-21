@@ -25,6 +25,26 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - Timestamps: created_at, updated_at (TIMESTAMPTZ with defaults)
 -- =============================================================================
 -- TODO: Write your CREATE TABLE statement here
+CREATE TABLE IF NOT EXISTS neobank.customers(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(225) UNIQUE NOT NULL,
+    phoneNum VARCHAR(20) UNIQUE,
+    firstName VARCHAR(100) NOT NULL,
+    lastName VARCHAR(100) NOT NULL,
+    dob DATE NOT NULL,
+    ssnHash CHAR(64) UNIQUE NOT NULL,
+    kycStatus VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT ageCheck CHECK (
+        dob <= CURRENT_DATE - INTERVAL '18 years'
+        ),
+
+    CONSTRAINT kycStat CHECK (
+        kycStatus IN ('pending', 'verified', 'rejected')
+        ),
+);
 
 
 -- =============================================================================
@@ -39,7 +59,14 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - Is active: BOOLEAN, default TRUE
 -- =============================================================================
 -- TODO: Write your CREATE TABLE statement here
-
+CREATE TABLE IF NOT EXISTS neobank.account_types(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    interestRate DECIMAL (5,4) NOT NULL,
+    minBalance DECIMAL (15,2) DEFAULT 0.00,
+    monthlyFee DECIMAL(10,2) DEFAULT 0.00,
+    isActive BOOLEAN DEFAULT TRUE
+);
 
 -- =============================================================================
 -- Table: accounts (BIGINT auto-increment primary key)
@@ -58,7 +85,24 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - Constraint: closed_at must be NOT NULL when status is 'closed', NULL otherwise
 -- =============================================================================
 -- TODO: Write your CREATE TABLE statement here
+CREATE TABLE IF NOT EXISTS neobank.accounts (
+    id BIGSERIAL PRIMARY KEY,
+    customerID UUID NOT NULL,
+    accountTypeID INT NOT NULL,
+    accountNum CHAR(16) UNIQUE NOT NULL,
+    rountingNum CHAR(9) NOT NULL,
+    balance DECIMAL(15,2) DEFAULT 0.00,
+    currency CHAR(3) DEFAULT 'USD',
+    status VARCHAR (20) DEFAULT 'active',
+    opened TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    closed TIMESTAMPTZ,
 
+    FOREIGN KEY (customerID)
+        REFERENCES neobank.customers(id)
+
+    FOREIGN KEY (accountTypeID)
+        REFERENCES neobank.account_types(id)
+);
 
 -- =============================================================================
 -- Table: transactions (UUID as primary key)
@@ -76,7 +120,25 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - Constraint: validate source/destination based on transaction type
 -- =============================================================================
 -- TODO: Write your CREATE TABLE statement here
+CREATE TABLE IF NOT EXISTS neobank.transactions(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    idempotencyKey UUID UNIQUE NOT NULL,
+    sourceAccountID BIGINT,
+    destinationAccountID BIGINT,
+    transactionType VARCHAR(20),
+    amount DECIMAL(15,2) NOT NULL,
+    currency CHAR(3) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'pending',
+    created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    processed TIMESTAMPTZ,
 
+    FOREIGN KEY (sourceAccountID)
+        REFERENCES neobank.accounts(id),
+
+    FOREIGN KEY (destinationAccountID)
+        REFERENCES neobank.accounts(id)
+);
 
 -- =============================================================================
 -- Table: audit_log (BIGINT auto-increment primary key)
@@ -93,6 +155,16 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - Changed at: TIMESTAMPTZ with default
 -- =============================================================================
 -- TODO: Write your CREATE TABLE statement here
+CREATE TABLE IF NOT EXISTS neobank.audit_log (
+    id BIGSERIAL PRIMARY KEY,
+    table_name VARCHAR(100) NOT NULL,
+    recordID TEXT NOT NULL,
+    oldValues JSONB,
+    newValues JSONB,
+    action VARCHAR(10),
+    changedBy UUID,
+    changedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
 
 
 -- =============================================================================
@@ -103,3 +175,11 @@ CREATE SCHEMA IF NOT EXISTS neobank;
 --   - transactions: source_account_id, destination_account_id, status, created_at
 -- =============================================================================
 -- TODO: Write your CREATE INDEX statements here
+CREATE INDEX IF NOT EXISTS customersEmail
+    ON neobank.customers(email);
+
+CREATE INDEX IF NOT EXISTS accountsCustomer
+    ON neobank.accounts(customerId);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_source
+    ON neobank.transactions(sourceAccountID);

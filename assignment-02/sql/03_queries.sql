@@ -13,6 +13,10 @@
 -- Order by: last_name, first_name
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
+SELECT id, email, firstName, lastName, kycStatus
+FROM neobank.customers
+WHERE kycStatus = 'verified'
+ORDER BY lastName, firstName;
 
 
 -- -----------------------------------------------------------------------------
@@ -22,7 +26,10 @@
 -- Order by: balance descending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, accountNum, balance, status
+FROM neobank.accounts
+WHERE balance > 25000
+ORDER BY balance DESC;
 
 -- -----------------------------------------------------------------------------
 -- Query 3: Gmail users (pattern matching with LIKE)
@@ -32,7 +39,11 @@
 -- Limit: 5 results
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, email, firstName, lastName, created_at
+FROM neobank.customers
+WHERE email LIKE '%@gmail.com'
+ORDER BY created_at DESC
+LIMIT 5;
 
 -- -----------------------------------------------------------------------------
 -- Query 4: Recent transactions (date range)
@@ -42,7 +53,10 @@
 -- Tip: Use CURRENT_TIMESTAMP - INTERVAL '30 days'
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, transactionType, amount, status, created
+FROM neobank.transactions
+WHERE created >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+ORDER BY created DESC;
 
 -- -----------------------------------------------------------------------------
 -- Query 5: Pending customers for review
@@ -51,7 +65,11 @@
 -- Order by: created_at ascending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, email, firstName, lastName, kycStatus, created_at
+FROM neobank.customers
+WHERE kycStatus = 'pending'
+AND created_at <= CURRENT_TIMESTAMP - INTERVAL '7 days'
+ORDER BY created_at ASC;
 
 -- -----------------------------------------------------------------------------
 -- Query 6: Frozen or closed accounts (OR operator)
@@ -60,7 +78,10 @@
 -- Order by: status, then balance descending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, accountNum, balance, status, closed
+FROM neobank.accounts
+WHERE status = 'frozen' OR status = 'closed'
+ORDER BY status, balance DESC;
 
 -- -----------------------------------------------------------------------------
 -- Query 7: Large pending transactions
@@ -69,7 +90,12 @@
 -- Order by: amount descending, created_at ascending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, transactionType, amount, status, created
+FROM neobank.transactions
+WHERE status = 'pending'
+AND amount > 1000
+AND created <= CURRENT_TIMESTAMP - INTERVAL '24 hours'
+ORDER BY amount DESC, created ASC;
 
 -- -----------------------------------------------------------------------------
 -- Query 8: Specific transaction types (using IN)
@@ -78,7 +104,10 @@
 -- Order by: created_at descending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, transactionType, amount, sourceAccountID, status, created
+FROM neobank.transactions
+WHERE transactionType IN ('withdrawal', 'fee')
+ORDER BY created DESC;
 
 -- -----------------------------------------------------------------------------
 -- Query 9: Multi-condition customer search
@@ -91,7 +120,12 @@
 -- Tip: Use BETWEEN for date range, LIKE for phone pattern
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT id, email, phoneNum, firstName, lastName, dob, kycStatus
+FROM neobank.customers
+WHERE kycStatus = 'verified'
+AND dob BETWEEN '1980-01-01' AND '1995-12-31'
+AND phoneNum LIKE '+1%'
+ORDER BY dob ASC;
 
 -- -----------------------------------------------------------------------------
 -- Query 10: Accounts with specific balance range
@@ -101,3 +135,9 @@
 -- Limit: 10 results
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
+SELECT id, accountNum, balance, currency, status
+FROM neobank.accounts
+WHERE balance BETWEEN 1000 AND 10000
+AND status = 'active'
+ORDER BY balance ASC
+LIMIT 10;

@@ -15,7 +15,11 @@
 -- Set kyc_status to 'rejected' and update the updated_at timestamp
 -- -----------------------------------------------------------------------------
 -- TODO: Write your UPDATE statement here
-
+UPDATE neobank.customers
+SET kycStatus = 'rejected',
+    updated_at = CURRENT_TIMESTAMP
+WHERE kycStatus = 'pending'
+AND created_at <= CURRENT_TIMESTAMP - INTERVAL '7 days';
 
 -- -----------------------------------------------------------------------------
 -- Update 2: Interest Rate Adjustment
@@ -24,6 +28,9 @@
 -- Target: account types with 'Savings' in the name
 -- -----------------------------------------------------------------------------
 -- TODO: Write your UPDATE statement here
+UPDATE neobank.account_types
+SET interestRate = LEAST(interestRate + 0.0050, 1.0)
+WHERE name LIKE '%Savings%';
 
 
 -- -----------------------------------------------------------------------------
@@ -32,7 +39,11 @@
 -- Set status to 'completed' and processed_at to current timestamp
 -- -----------------------------------------------------------------------------
 -- TODO: Write your UPDATE statement here
-
+UPDATE neobank.transactions
+SET status = 'completed',
+    processed_at = CURRENT_TIMESTAMP
+WHERE status = 'pending'
+AND transactionType IN ('fee', 'interest');
 
 -- -----------------------------------------------------------------------------
 -- Update 4: Freeze Low Balance Accounts
@@ -40,6 +51,10 @@
 -- Set status to 'frozen'
 -- -----------------------------------------------------------------------------
 -- TODO: Write your UPDATE statement here
+UPDATE neobank.accounts
+SET status = 'frozen'
+WHERE status = 'active'
+AND balance <= 0;
 
 
 -- -----------------------------------------------------------------------------
@@ -49,7 +64,11 @@
 --   - Have balance greater than $1,000
 -- -----------------------------------------------------------------------------
 -- TODO: Write your UPDATE statement here
-
+UPDATE neobank.accounts
+SET balance = balance + 50
+WHERE status = 'active'
+AND balance > 1000
+AND created <= CURRENT_TIMESTAMP - INTERVAL '90 days';
 
 -- =============================================================================
 -- DELETE OPERATIONS
@@ -60,7 +79,9 @@
 -- Remove failed transactions older than 1 year
 -- -----------------------------------------------------------------------------
 -- TODO: Write your DELETE statement here
-
+DELETE FROM neobank.transactions
+WHERE status = 'failed'
+AND created <= CURRENT_TIMESTAMP - INTERVAL '1 year';
 
 -- -----------------------------------------------------------------------------
 -- Delete 2: Remove Test Data
@@ -76,7 +97,30 @@
 -- Tip: You can run SELECT queries first to identify the IDs, then use them in DELETE
 -- -----------------------------------------------------------------------------
 -- TODO: Write your DELETE statements here (multiple steps)
+DELETE FROM neobank.transactions
+WHERE sourceAccountID IN (
+    SELECT id FROM neobank.accounts
+    WHERE customerID IN (
+        SELECT id FROM neobank.customers
+        WHERE email LIKE '%@test.neobank.local'
+    )
+)
+OR destinationAccountID IN (
+    SELECT id FROM neobank.accounts
+    WHERE customerID IN (
+        SELECT id FROM neobank.customers
+        WHERE email LIKE '%@test.neobank.local'
+    )
+);
 
+DELETE FROM neobank.accounts
+WHERE customerID IN (
+    SELECT id FROM neobank.customers
+    WHERE email LIKE '%@test.neobank.local'
+);
+
+DELETE FROM neobank.customers
+WHERE email LIKE '%@test.neobank.local';
 
 -- =============================================================================
 -- VERIFICATION QUERIES
