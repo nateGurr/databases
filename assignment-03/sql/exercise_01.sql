@@ -8,7 +8,10 @@
 -- Order by: price descending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT product_id, name, price
+FROM products
+WHERE price >= 500
+ORDER BY price DESC;
 
 -- Task 1.2: Budget-Friendly Options (4 points)
 -- Find all products priced between $20 and $100 (inclusive)
@@ -17,6 +20,10 @@
 -- Tip: Use BETWEEN operator
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
+SELECT product_id, name, price, category_id
+FROM products
+WHERE price BETWEEN 20 AND 100
+ORDER BY price ASC;
 
 
 -- Task 1.3: Electronics Department (4 points)
@@ -27,7 +34,10 @@
 --      Then use IN operator with those explicit category IDs (e.g., category_id IN (1, 2, 3))
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT product_id, name, category_id, price
+FROM products
+WHERE category_id IN (1, 2, 3)
+ORDER BY name ASC;
 
 -- Task 1.4: Order Status Filter (4 points)
 -- Find orders that are pending, confirmed, or processing
@@ -36,7 +46,10 @@
 -- Tip: Use IN operator
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
-
+SELECT order_id, order_number, status, total_amount, created_at
+FROM orders
+WHERE status IN ('pending', 'confirmed', 'processing')
+ORDER BY created_at DESC;
 
 -- Task 1.5: High-Value Completed Orders (4 points)
 -- Find delivered orders with total > $1000
@@ -44,3 +57,8 @@
 -- Order by: total_amount descending
 -- -----------------------------------------------------------------------------
 -- TODO: Write your SELECT statement here
+SELECT order_id, order_number, customer_id, total_amount, delivered_at
+FROM orders
+WHERE status = 'delivered'
+AND total_amount > 1000
+ORDER BY total_amount DESC;
